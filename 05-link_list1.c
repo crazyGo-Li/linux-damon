@@ -23,17 +23,59 @@ int Delete_LinkList(LinkList, int);
 
 void Destroy_LinkList(LinkList);
 void Scan_Link_list(LinkList );
+void revers(LinkList );
+void pur_LinkList(LinkList);
 
 int main()
 {
-    LinkList L = Create_LinkList();
-    Insert_LinkList(L, 1, 1);
-    Insert_LinkList(L, 2, 2);
-    Insert_LinkList(L, 3, 3);
+    LinkList L = Create_LinkList3();
+    Scan_Link_list(L);
+    printf("**************************\n");
+    //revers(L);
+    pur_LinkList(L);
     Scan_Link_list(L);
     Destroy_LinkList(L);
+    
 
     return 0;
+}
+
+void pur_LinkList(LinkList H)
+{
+    LNode *p, *q, *r;
+    p = H->next;
+    while(p != NULL &&  p->next != NULL)
+    {
+        q = p;
+        while(q->next)
+        {
+            if(q->next->i_data == p->i_data)
+            {
+                r = q->next;
+                q->next = r->next;
+                free(r);
+            }
+            else
+            {
+                q = q->next;
+            }
+        }
+        p = p->next;
+    }
+}
+
+void revers(LinkList H)
+{
+    LNode *p, *q;
+    p = H->next;
+    H->next = NULL;
+    while(p)
+    {
+        q = p;
+        p = p->next;
+        q->next = H->next;
+        H->next = q;
+    }
 }
 
 void Destroy_LinkList(LinkList L)
@@ -49,13 +91,14 @@ void Destroy_LinkList(LinkList L)
 
 void Scan_Link_list(LinkList L)
 {
-    LinkList p =L;
+    LinkList p =L->next;
     int i=1;
 
     while(p != NULL)
     {
-        printf("is: %d data: %d\n", i, p->i_data);
+        printf("id: %d data: %d\n", i, p->i_data);
         p = p->next;
+        i++;
     }
 }
 
