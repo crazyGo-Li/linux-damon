@@ -18,10 +18,82 @@ int Length_LinkList2(LinkList);
 LNode *Get_LinkList(LinkList , int );
 LNode *Locate_LinkList(LinkList , int );
 
+int Insert_LinkList(LinkList , int , int );
+int Delete_LinkList(LinkList, int);
+
+void Destroy_LinkList(LinkList);
+void Scan_Link_list(LinkList );
 
 int main()
 {
+    LinkList L = Create_LinkList();
+    Insert_LinkList(L, 1, 1);
+    Insert_LinkList(L, 2, 2);
+    Insert_LinkList(L, 3, 3);
+    Scan_Link_list(L);
+    Destroy_LinkList(L);
+
     return 0;
+}
+
+void Destroy_LinkList(LinkList L)
+{
+    LinkList p = NULL;
+    while(L != NULL)
+    {
+        p = L;
+        L = L->next;
+        free(p);
+    }
+}
+
+void Scan_Link_list(LinkList L)
+{
+    LinkList p =L;
+    int i=1;
+
+    while(p != NULL)
+    {
+        printf("is: %d data: %d\n", i, p->i_data);
+        p = p->next;
+    }
+}
+
+int Delete_LinkList(LinkList L, int i)
+{
+    LinkList p, s;
+    p = Get_LinkList(L, i-1);
+    if(p == NULL || p->next == NULL)
+    {
+        printf("args i error\n");
+        return -1;
+    }
+    else
+    {
+        s = p->next;
+        p->next = s->next;
+        free(s);
+        return 0;
+    }
+}
+
+int Insert_LinkList(LinkList L, int i, int x)
+{
+    LNode *p, *s;
+    p = Get_LinkList(L, i-1);
+    if(p == NULL)
+    {
+        printf("args i error\n");
+        return -1;
+    }
+    else
+    {
+        s = (LinkList)malloc(sizeof(LNode));
+        s->i_data = x;
+        s->next = p->next;
+        p->next = s;
+        return 0;
+    }
 }
 
 LNode *Locate_LinkList(LinkList L, int x)
