@@ -33,6 +33,7 @@ int main(void)
 	}
 	else if(pid == 0)
 	{
+		printf("子进程创建成功\n");
 		fd = open("named_fifo", O_WRONLY);
 		if(fd < 0)
 		{
@@ -56,7 +57,14 @@ int main(void)
 	}
 	else
 	{
-		#if 0
+				
+		fd = open("named_fifo", O_RDONLY);
+		if(fd < 0)
+		{
+			printf("打开文件失败\n");
+			exit(fd);
+		}
+		#if 1
 		pid = waitpid(pid, &status, 0);
 		if(pid < 0)
 		{
@@ -64,14 +72,11 @@ int main(void)
 			return pid;
 		}
 		#endif
-		fd = open("named_fifo", O_RDONLY);
-		if(fd < 0)
-		{
-			printf("打开文件失败\n");
-			exit(fd);
-		}
+
 		nbytes = read(fd, read_buffer, sizeof(read_buffer));
-		printf("%s\b", read_buffer);
+		printf("*********************\n");
+		printf("%s\n", read_buffer);
+		printf("*********************\n");
 		exit(0);
 	}
 	
