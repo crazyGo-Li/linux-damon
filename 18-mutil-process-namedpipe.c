@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <sys/wait.h>
-
+#include <fcntl.h>
 
 int main(void)
 {
@@ -56,12 +56,14 @@ int main(void)
 	}
 	else
 	{
+		#if 0
 		pid = waitpid(pid, &status, 0);
 		if(pid < 0)
 		{
 			printf("等待子进程失败\n");
 			return pid;
 		}
+		#endif
 		fd = open("named_fifo", O_RDONLY);
 		if(fd < 0)
 		{
