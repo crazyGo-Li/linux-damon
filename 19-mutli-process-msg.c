@@ -25,7 +25,7 @@ int main(void)
 	struct msqid_ds msg_info;
 	struct msgmbuf msg_mbuf;
 	int msg_sflags, msg_rflags;
-	char *msgpath = "/ipc/msg";
+	char *msgpath = "./";
 
 	key = ftok(msgpath, 'b');
 	if(key != -1)
@@ -38,7 +38,7 @@ int main(void)
 	}
 
 	msg_flags = IPC_CREAT|IPC_EXCL;
-	msg_id = msgget(key, msg_flags|0x0666);
+	msg_id = msgget(key, msg_flags | 0666);
 	if(msg_id == -1)
 	{
 		printf("创建消息失败\n");
@@ -48,8 +48,8 @@ int main(void)
 
 	msg_sflags = IPC_NOWAIT;
 	msg_mbuf.mtype = 10;
-	memcpy(msg_mbuf.mtext, "测试消息", sizeof("测试消息"));
-	ret = msgsnd(msg_id, (void *)&msg_mbuf, sizeof("测试消息"), msg_sflags);
+	memcpy(msg_mbuf.mtext, "abc", sizeof("abc"));
+	ret = msgsnd(msg_id, (void *)&msg_mbuf, 10, msg_sflags);
 	if(-1 == ret)
 	{
 		printf("%s\n", strerror(errno));
@@ -61,6 +61,7 @@ int main(void)
 	ret = msgrcv(msg_id, &msg_mbuf, 10, 10, msg_rflags);
 	if(-1 == ret)
 	{
+		printf("%s\n", strerror(errno));
 		printf("接收消息失败\n");
 	}
 	else
