@@ -1,3 +1,4 @@
+#if 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +10,7 @@
 
 #include <errno.h>
 
+#define BUF_LEN 10
 
 void msg_show_attr(int, struct msqid_ds);
 
@@ -19,7 +21,7 @@ int main(void)
 	key_t key;
 	struct msgmbuf{
 		int mtype;
-		char mtext[10];
+		char mtext[BUF_LEN];
 		};
 
 	struct msqid_ds msg_info;
@@ -37,7 +39,7 @@ int main(void)
 		printf("创建key失败\n");
 	}
 
-	msg_flags = IPC_CREAT|IPC_EXCL;
+	msg_flags = IPC_CREAT;
 	msg_id = msgget(key, msg_flags | 0666);
 	if(msg_id == -1)
 	{
@@ -47,9 +49,9 @@ int main(void)
 	msg_show_attr(msg_id, msg_info);
 
 	msg_sflags = IPC_NOWAIT;
-	msg_mbuf.mtype = 10;
+	msg_mbuf.mtype = 3;
 	memcpy(msg_mbuf.mtext, "abc", sizeof("abc"));
-	ret = msgsnd(msg_id, (void *)&msg_mbuf, 10, msg_sflags);
+	ret = msgsnd(msg_id, (void *)&msg_mbuf, BUF_LEN, msg_sflags);
 	if(-1 == ret)
 	{
 		printf("%s\n", strerror(errno));
@@ -57,8 +59,11 @@ int main(void)
 	}
 	msg_show_attr(msg_id, msg_info);
 
+
+	memset((void *)&msg_mbuf, 0, sizeof(msg_mbuf));
 	msg_rflags = IPC_NOWAIT|MSG_NOERROR;
-	ret = msgrcv(msg_id, &msg_mbuf, 10, 10, msg_rflags);
+	//ret = msgrcv(msg_id, (void *)&msg_mbuf, 10, 0, msg_rflags);
+	ret = msgrcv(msg_id, (void *)&msg_mbuf, BUF_LEN, 3, msg_rflags);
 	if(-1 == ret)
 	{
 		printf("%s\n", strerror(errno));
@@ -67,6 +72,8 @@ int main(void)
 	else
 	{
 		printf("接收消息成功，长度：%d\n", ret);
+		printf("接收到的消息类型：%ld\n", msg_mbuf.mtype);
+		printf("接收到的消息为：%s\n", msg_mbuf.mtext);
 	}
 
 	msg_show_attr(msg_id, msg_info);
@@ -104,4 +111,5 @@ void msg_show_attr(int msg_id, struct msqid_ds msg_info)
 	printf("消息的GID是：%d\n", msg_info.msg_perm.gid);
 	return;
 }
+#endif
 
