@@ -10,6 +10,22 @@
 #define PORT 8888
 #define BACKLOG 2
 
+void process_conn_server(int s)
+{
+	ssize_t size = 0;
+	char buffer[1024] = {};
+	for(;;)
+	{
+		size = read(s, buffer, 1024);
+		if(size == 0)
+		{
+			return;
+		}
+		snprinf(buffer, "%d bytes altogether\n", size);
+		write(s, buffer, strlen(buffer)+1);
+	}
+}
+
 int main(void)
 {
 	int ss, sc;
@@ -63,6 +79,7 @@ int main(void)
 		if(pid == 0)
 		{
 			close(ss);
+			process_conn_server(sc);
 		}
 		else
 		{
