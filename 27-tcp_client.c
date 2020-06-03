@@ -1,11 +1,11 @@
-#include <sdtlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <strerror.h>
+#include <errno.h>
 
 #define PORT 8888
 
@@ -15,7 +15,7 @@ void process_conn_client(int s)
 		char buffer[1024] = {};
 		for(;;)
 		{
-			size = read(s, buffer, 1024);
+			size = read(0, buffer, 1024);
 			if(size > 0)
 			{
 				write(s, buffer, size);
@@ -25,7 +25,7 @@ void process_conn_client(int s)
 		}
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	int s;
 	struct sockaddr_in server_addr;
@@ -36,7 +36,7 @@ int main(void)
 		return -1;
 	}
 
-	bzero(&server_addr, 0, sizeof(server_addr));
+	bzero(&server_addr, sizeof(server_addr));
 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);

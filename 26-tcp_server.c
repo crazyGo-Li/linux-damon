@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <strings.h>
 #include <errno.h>
+#include <string.h>
 
 #define PORT 8888
 #define BACKLOG 2
@@ -21,12 +21,12 @@ void process_conn_server(int s)
 		{
 			return;
 		}
-		snprinf(buffer, "%d bytes altogether\n", size);
+		sprintf(buffer, "%d bytes altogether\n", size);
 		write(s, buffer, strlen(buffer)+1);
 	}
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	int ss, sc;
 	struct sockaddr_in server_addr;
@@ -45,14 +45,14 @@ int main(void)
 	/* set server address */
 	bzero(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = htol(INADDR_ANY);
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(PORT);
 
 	/* bind socket */
 	err = bind(ss, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	if(err < 0)
 	{
-		printf("bind fail : %s\n", strerr(errno));
+		printf("bind fail : %s\n", strerror(errno));
 		close(ss);
 		return -1;
 	}
@@ -61,7 +61,7 @@ int main(void)
 	err = listen(ss, BACKLOG);
 	if(err < 0)
 	{
-		printf("listen fail %s\n", strerr(errno));
+		printf("listen fail %s\n", strerror(errno));
 		close(ss);
 		return -1;
 	}
