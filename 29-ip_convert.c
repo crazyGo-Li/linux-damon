@@ -54,5 +54,26 @@ int main(int argc, char *argv[])
 
 	printf("inet_ntoa:\n	0x%x -> %s\n	%s\n", ip.s_addr, str, str2);
 
- 	return 0;
+	ip.s_addr = inet_addr(addr3);
+	if(ip.s_addr != -1)
+	{
+		printf("inet_addrL string is %s value is 0x%x\n", addr3, ip.s_addr);
+	}
+	else
+	{
+		printf("inet_addr: string %s convert fail: %s\n", addr3, strerror(errno));
+	}
+	str = inet_ntoa(ip);
+	printf("inet_ntoa: string %s ,value 0x%x\n", str, ip.s_addr);
+
+	inet_aton(addr1, &ip);
+	local.s_addr = htonl(ip.s_addr);
+	local.s_addr = inet_lnaof(ip);
+	str = inet_ntoa(local);
+	printf("inet_lnaof: %s, ip: 0x%x\n", str, local.s_addr);
+
+	network.s_addr =  inet_netof(ip);
+	printf("inet_netof: value 0x%x\n", network.s_addr);
+	return 0;
+
 }
