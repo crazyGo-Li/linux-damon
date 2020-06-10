@@ -9,16 +9,32 @@
 #include <netinet/in.h>
 
 #define PORT 8888
+#define BUFLEN 1024
 
+/* init signal catch function */
 typedef void (*sighandler_t)(int);
-
-
 void sig_process(int);
 void sig_pipe(int);
 
 /* set socket as global variables */
 static int s;
-void sig_process_client(int);
+
+/* get message from stdin and sed to server */
+
+void process_conn_client(int s)
+{
+	ssize_t size = 0;
+	char buffer[BUFLEN] = {0};
+
+	size = read(0, buffer, BUFLEN);
+	if(size > 0)
+	{
+		send(s, buffer, size, 0);
+		size = recv(s, buffer, 1024, 0);
+		write(1, buffer, size);
+	}
+	return;
+}
 
 int main(int argc, char * argv[])
 {
@@ -63,24 +79,19 @@ int main(int argc, char * argv[])
 	/* connect to server */
 	connect(s, (struct sockaddr*)&server_addr, sizeof(struct sockaddr));
 	process_conn_client(s);
-	
+	close(s);
 	return 0;
 }
 
 void sig_process(int signo)
 {
-
-}
-
-void sig_pipe(int signo)
-{
-
-}
-
-void sig_process_client(int signo)
-{
-	printf("get exists signo \n");
+	printf("get SIGINT\n");
 	close(s);
 	exit(0);
 }
 
+void sig_pipe(int signo)
+{
+	printf("get SIGPIPE\n");
+	return;
+}

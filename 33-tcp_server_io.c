@@ -1,4 +1,4 @@
-#include <strings.h>
+#include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -6,11 +6,31 @@
 #include <signal.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #define PORT 8888
 #define BACKLOG 2
+#define BUFLEN 1024
 
 void sig_process(int);
+
+/* get client message, and send get size */
+void process_conn_server(int s)
+{
+	ssize_t size = 0;
+	char buffer[BUFLEN] = {};
+	for(;;)
+	{
+		size = recv(s, buffer, BUFLEN, 0);
+		if(size == 0)
+		{
+			return;
+		}
+		sprintf(buffer, "%d bytes altogether\n", size);
+		send(s, buffer, strlen(buffer)+1, 0);
+	}
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -30,12 +50,12 @@ int main(int argc, char *argv[])
 		return  -1;
 	}
 
-	bzero(&ss, sizeof(struct sockaddr_in));
+	bzero(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = PORT;
 
-	err = bind(ss, (struct sockaddr*)&server_addr, sizeof(struct sockaddr));
+	err = bind(ss, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	if(err < 0)
 	{
 		printf("bind fail %s\n", strerror(errno));
@@ -44,10 +64,10 @@ int main(int argc, char *argv[])
 	for(;;)
 	{
 		int addrlen = sizeof(struct sockaddr);
-		sc =accept(ss, (struct sockaddr&)*client_addr, sizeof(client_addr));
+		sc =accept(ss, (struct sockaddr*)&client_addr, &addrlen);
 		if(sc < 0)
 		{
-			printf("accept fail \n", strerror(errno));
+			printf("accept fail %s \n", strerror(errno));
 			continue;
 		}
 
@@ -68,18 +88,18 @@ int main(int argc, char *argv[])
 
 void sig_process(int signo)
 {
-	if(signo == SIG_PIP)
+	if(signo == SIGPIPE)
 	{
-		printf("get SIG_PIP\n");
+		printf("get SIGPIPE\n");
 		exit(0);
 	}
-	else if(signo == SIG_INT)
+	else if(signo == SIGINT)
 	{
-		printf("get SIG_INT\n");
+		printf("get SIGINT\n");
 		exit(0);
 	}
 	else
 	{
-		return 0;
+		return ;
 	}
 }
