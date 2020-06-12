@@ -61,6 +61,14 @@ int main(int argc, char *argv[])
 		printf("bind fail %s\n", strerror(errno));
 		return -1;
 	}
+
+	err = listen(ss, BACKLOG);
+	if(err == -1)
+	{
+		printf("listen fail %s\n", strerror(errno));
+		return -1;
+	}
+
 	for(;;)
 	{
 		int addrlen = sizeof(struct sockaddr);
@@ -82,8 +90,6 @@ int main(int argc, char *argv[])
 			close(sc);
 		}
 	}
-	
-	return 0;
 }
 
 void sig_process(int signo)
