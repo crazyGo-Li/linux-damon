@@ -55,12 +55,6 @@ int main(int argc, char * argv[])
 		printf("attach signal int fail %s\n", strerror(errno));
 		return -1;
 	}
-	ret - signal(SIGPIPE, sig_pipe);
-	if(ret == SIG_ERR)
-	{
-		printf("attach signal pipe fail %s\n", strerror(errno));
-		return -1;
-	}
 
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if(s < 0)
@@ -77,7 +71,13 @@ int main(int argc, char * argv[])
 	inet_pton(AF_INET, argv[1], &server_addr.sin_addr);
 
 	/* connect to server */
-	connect(s, (struct sockaddr*)&server_addr, sizeof(struct sockaddr));
+	err = connect(s, (struct sockaddr*)&server_addr, sizeof(struct sockaddr));
+	if(err == -1)
+	{
+		printf("connect fail: %s\n", strerror(errno));
+		close(s);
+		return -1;
+	}
 	process_conn_client(s);
 	close(s);
 	return 0;
