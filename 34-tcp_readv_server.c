@@ -21,6 +21,7 @@
 typedef void (*sighandler_t)(int signo);
 
 static struct iovec *vs=NULL, *vc=NULL;
+int ss=-1, sc=-1;
 
 void sig_process(int signo)
 {
@@ -39,6 +40,8 @@ void sig_pipe(int signo)
     {
         free(vc);
     }
+    if(ss > 0) close(ss);
+    if(sc > 0) close(sc);
     _exit(0);
 }
 
@@ -67,6 +70,7 @@ void process_conn_server(int sc)
         size = readv(sc, v, 3);
         if(size == 0)
         {
+            close(sc);
             return;
         }
 
@@ -82,7 +86,6 @@ void process_conn_server(int sc)
 int main(int argc, char* argv[])
 {
     int err = 0;
-    int ss, sc;
     struct sockaddr_in server_addr, client_addr;
     pid_t pid;
     sighandler_t ret;
