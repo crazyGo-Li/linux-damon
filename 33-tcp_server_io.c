@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
 		if(pid == 0)
 		{
 			printf("get connection\n");
-			close(ss);
 			process_conn_server(sc);
 		}
 		else
