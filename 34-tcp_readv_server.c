@@ -49,7 +49,7 @@ void process_conn_server(int sc)
 {
     char buffer[VBUFLEN] = {0};
     ssize_t size = 0;
-    struct iovec *v = (struct iovec *)malloc(sizeof(struct iovec));
+    struct iovec *v = (struct iovec *)malloc(3*sizeof(struct iovec));
     if(v == NULL)
     {
         CODE_DEBUG;
