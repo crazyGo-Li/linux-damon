@@ -48,7 +48,6 @@ void process_conn_client(s)
     if(v == NULL)
     {
         CODE_DEBUG;
-        return -1;
     }
     vc = v;
     v[0].iov_base = buffer;
@@ -102,7 +101,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    s = spcket(AF_INET, SOCK_STREAM, 0);
+    s = socket(AF_INET, SOCK_STREAM, 0);
     if(s == -1)
     {
         CODE_DEBUG;
@@ -111,12 +110,12 @@ int main(int argc, char *argv[]) {
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_addr.sin_port = htos(PORT);
+    server_addr.sin_port = htons(PORT);
 
     inet_pton(AF_INET, argv[1], &server_addr.sin_addr);
 
     connect(s, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-    process_connclient(s);
+    process_conn_client(s);
     close(s);
 
     return 0;
