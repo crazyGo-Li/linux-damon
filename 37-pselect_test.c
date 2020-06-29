@@ -19,5 +19,16 @@ void child_sig_handler (int x)
 int main(int argc, char * argv[])
 {
     signal_t sigmask, orig_sigmask;
-    return 0;
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &sigmask, &orig_sigmask);
+    signal(SIGCHLD, child_sig_handler());
+    for(;;)
+    {
+        for(; child_events > 0; child_events--)
+        {
+
+        }
+        f = pselect(nfds, &rd, &wr, &er, 0, &orig_sigmask);
+    }
 }
