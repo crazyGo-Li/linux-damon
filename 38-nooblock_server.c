@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 
-#define PORT 9999
+#define PORT 9998
 #define BACKLOG 4
 #define BUFLEN 1024
 
@@ -44,12 +44,14 @@ int main(void)
     }
 
     /* get file description no block */
+#if 0
     ret = fcntl(s_s, F_SETFL, O_NONBLOCK);
     if(ret == -1)
     {
         DEBUG_MSG;
         return -1;
     }
+#endif
 
     ret = listen(s_s, BACKLOG);
     if(ret == -1)
@@ -67,20 +69,20 @@ int main(void)
             {
                 close(s_s);
                 DEBUG_MSG;
-                return -1;
+                //return -1;
             }
         }
 
         while(recv(s_c, buffer, 1024, 0) <= 0);
 
-        if(strcmp(buffer, "HELLO") == 0)
+        if(strncmp(buffer, "HELLO", 5) == 0)
         {
             send(s_c, "OK", 3, 0);
             close(s_c);
             continue;
         }
 
-        if(strcmp(buffer, "SHUTDOWN") == 0)
+        if(strncmp(buffer, "SHUTDOWN", 8) == 0)
         {
             send(s_c, "BYE", 4, 0);
             close(s_c);
