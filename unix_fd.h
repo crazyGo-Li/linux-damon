@@ -12,6 +12,7 @@
 #include <fcntl.h>
 
 #define UNIX_DOMAIN "/tpm/unix.domain"
+#define BACKLOG 5
 #define BUF_LEN 1024
 #define DEBUG_MSG printf("%s(%d): %s\n", __func__, __LINE__, strerror(errno))
 
