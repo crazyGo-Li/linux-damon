@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_un server_addr, client_addr;
 
 	/* create server socket */
-	listen_fd = socket(AF_UNIX, SOCK_STREAM, 0);	
+	listen_fd = socket(AF_LOCAL, SOCK_STREAM, 0);	
 	if(listen_fd == -1)
 	{
 		DEBUG_MSG;
@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 	unlink(path);
 
 	/* file server address */
-	server_addr.sun_family = AF_UNIX;
-	strncpy(server_addr.sun_path, path, sizeof(server_addr.sun_path) - 1);
+	server_addr.sun_family = AF_LOCAL;
+	strcpy(server_addr.sun_path, UNIX_DOMAIN);
 
 	/* bind socket fd with server address */
 	ret = bind(listen_fd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
@@ -44,10 +44,11 @@ int main(int argc, char *argv[])
 		return -3;
 	}
 
+	client_fd = accept(listen_fd, (struct sockaddr*)&client_addr, &len);
 	while(1)
 	{
 		printf("server waiting:\n");
-		client_fd = accept(listen_fd, (struct sockaddr*)&client_addr, &len);
+		
 		bytes = read(client_fd, buffer, BUF_LEN);
 		if(bytes < 0)
 		{
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			printf("get message: %s\n", buffer);
-			if(strcmp(buffer, "exit") == 0)
+			if(strncmp(buffer, "exit", 3) == 0)
 			{
 				close(listen_fd);
 				close(client_fd);
